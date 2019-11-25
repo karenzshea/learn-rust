@@ -46,11 +46,8 @@ pub fn grid_init(nx_cells: u32, ny_cells: u32) -> Grid {
             });
         }
     }
-    // TODO figure out how to do this type conversion... 18.0 !=> 180
-    //let max_food = ((constants::GRID_ROWS * constants::GRID_COLUMNS) as f32 * 0.05).floor();
-    //println!("max food {}", max_food);
-    let max_food = 18;
-    let grid = Grid { grid: grid_vector, max_food: max_food as u32, num_food: 0 };
+    let max_food: u32 = ((constants::GRID_ROWS * constants::GRID_COLUMNS) as f32 * 0.005).floor() as u32;
+    let grid = Grid { grid: grid_vector, max_food: max_food, num_food: 0 };
 
     grid
 }
