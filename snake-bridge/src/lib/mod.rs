@@ -8,7 +8,7 @@ use sdl2::EventPump;
 pub mod constants;
 pub mod snake;
 pub mod types;
-use types::{Cell, Grid};
+use types::{Cell, Grid, CellClass};
 
 // this function initializes the canvas
 pub fn init(x: u32, y: u32) -> (Canvas<Window>, EventPump) {
@@ -31,6 +31,7 @@ pub fn init(x: u32, y: u32) -> (Canvas<Window>, EventPump) {
     (canvas, event_pump)
 }
 
+// TODO make this Grid type constructor
 pub fn grid_init(nx_cells: u32, ny_cells: u32) -> Grid {
     let mut grid_vector = Vec::new();
 
@@ -41,10 +42,15 @@ pub fn grid_init(nx_cells: u32, ny_cells: u32) -> Grid {
                 red: 35_u8,
                 green: 15_u8,
                 blue: 13_u8,
+                class: CellClass::Empty,
             });
         }
     }
-    let grid = Grid { grid: grid_vector };
+    // TODO figure out how to do this type conversion... 18.0 !=> 180
+    //let max_food = ((constants::GRID_ROWS * constants::GRID_COLUMNS) as f32 * 0.05).floor();
+    //println!("max food {}", max_food);
+    let max_food = 18;
+    let grid = Grid { grid: grid_vector, max_food: max_food as u32, num_food: 0 };
 
     grid
 }

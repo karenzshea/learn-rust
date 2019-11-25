@@ -6,7 +6,7 @@ use sdl2::keyboard::Keycode;
 
 use crate::lib::constants;
 use crate::lib::snake;
-use crate::lib::types::{Cell, SnakeHead};
+use crate::lib::types::{Cell, SnakeHead, CellClass};
 
 pub mod lib;
 fn main() {
@@ -24,6 +24,7 @@ fn main() {
             red: 0,
             green: 0,
             blue: 255,
+            class: CellClass::Snake,
         },
     };
 
@@ -59,6 +60,7 @@ fn main() {
             }
         }
         // randomly add food to grid
+        grid.replenish_food();
 
         snake::update_snakehead_location(&mut snakehead, direction);
         snake::update_snakehead_in_grid(&mut grid, &mut snakehead);

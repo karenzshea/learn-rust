@@ -1,5 +1,5 @@
 use crate::lib::constants::{GRID_CELL_COLOR, GRID_COLUMNS, GRID_ROWS};
-use crate::lib::types::{Cell, Grid, SnakeHead};
+use crate::lib::types::{Cell, Grid, SnakeHead, CellClass};
 
 pub fn update_snakehead_location(head: &mut SnakeHead, direction: (i32, i32)) {
     let head_pos = head.body_positions.last();
@@ -13,6 +13,7 @@ pub fn update_snakehead_location(head: &mut SnakeHead, direction: (i32, i32)) {
         }
     }
 
+    // if snake hits wall, come out the other side
     if new_row < 0 {
         new_row = (GRID_ROWS - 1) as i32;
     } else if new_row == GRID_ROWS as i32 {
@@ -38,6 +39,7 @@ pub fn update_snakehead_in_grid(grid: &mut Grid, head: &SnakeHead) {
                 red: head.color.red,
                 green: head.color.green,
                 blue: head.color.blue,
+                class: CellClass::Snake,
             };
         }
     }
