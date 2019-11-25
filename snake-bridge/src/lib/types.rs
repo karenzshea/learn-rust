@@ -2,6 +2,7 @@ use rand;
 
 use crate::lib::constants::{ GRID_ROWS, GRID_COLUMNS, FOOD_CELL_COLOR };
 
+#[derive(Debug, PartialEq)]
 pub enum CellClass {
     Snake,
     Food,

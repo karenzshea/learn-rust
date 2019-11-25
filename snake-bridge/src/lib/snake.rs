@@ -2,9 +2,12 @@ use crate::lib::constants::{GRID_CELL_COLOR, GRID_COLUMNS, GRID_ROWS};
 use crate::lib::types::{Cell, Grid, SnakeHead, CellClass};
 
 pub fn update_snakehead_location(head: &mut SnakeHead, direction: (i32, i32)) {
-    let head_pos = head.body_positions.last();
+    // body_positions vector looks like
+    // tail      head
+    //  <---------:>
     let mut new_row;
     let mut new_column;
+    let head_pos = head.body_positions.last();
     match head_pos {
         None => panic!("snake is empty!"),
         Some(v) => {
@@ -31,10 +34,16 @@ pub fn update_snakehead_location(head: &mut SnakeHead, direction: (i32, i32)) {
 }
 
 pub fn update_snakehead_in_grid(grid: &mut Grid, head: &SnakeHead) {
+    let mut clear_tail = true;
+
     let head_pos = head.body_positions.last();
     match head_pos {
         None => panic!("snake is empty!"),
         Some(v) => {
+            if grid.grid[v.0 as usize][v.1 as usize].class == CellClass::Food {
+                clear_tail = false;
+            }
+
             grid.grid[v.0 as usize][v.1 as usize] = Cell {
                 red: head.color.red,
                 green: head.color.green,
@@ -44,6 +53,8 @@ pub fn update_snakehead_in_grid(grid: &mut Grid, head: &SnakeHead) {
         }
     }
 
-    grid.grid[head.last_tail_position.0 as usize][head.last_tail_position.1 as usize] =
-        GRID_CELL_COLOR;
+    if clear_tail {
+        grid.grid[head.last_tail_position.0 as usize][head.last_tail_position.1 as usize] =
+            GRID_CELL_COLOR;
+    }
 }
