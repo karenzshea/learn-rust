@@ -15,7 +15,6 @@ fn main() {
     let mut grid = lib::grid_init(constants::GRID_COLUMNS, constants::GRID_ROWS);
     let mut direction = (1i32, 0i32);
     let mut snakehead = SnakeHead {
-        last_tail_position: (0, 0),
         body_positions: vec![(
             (constants::GRID_ROWS / 2) as i32,
             (constants::GRID_COLUMNS / 2) as i32,
@@ -27,8 +26,6 @@ fn main() {
             class: CellClass::Snake,
         },
     };
-
-    thread::spawn(move || {});
 
     snake::update_snakehead_in_grid(&mut grid, &mut snakehead);
 

@@ -7,7 +7,7 @@ pub fn update_snakehead_location(head: &mut SnakeHead, direction: (i32, i32)) {
     //  <---------:>
     let mut new_row;
     let mut new_column;
-    let head_pos = head.body_positions.last();
+    let head_pos = head.body_positions.get(head.body_positions.len() - 1);
     match head_pos {
         None => panic!("snake is empty!"),
         Some(v) => {
@@ -29,11 +29,11 @@ pub fn update_snakehead_location(head: &mut SnakeHead, direction: (i32, i32)) {
         new_column = 0;
     }
 
+
     head.body_positions.push((new_row, new_column));
-    head.last_tail_position = head.body_positions.remove(0);
 }
 
-pub fn update_snakehead_in_grid(grid: &mut Grid, head: &SnakeHead) {
+pub fn update_snakehead_in_grid(grid: &mut Grid, head: &mut SnakeHead) {
     let mut clear_tail = true;
 
     let head_pos = head.body_positions.last();
@@ -42,6 +42,7 @@ pub fn update_snakehead_in_grid(grid: &mut Grid, head: &SnakeHead) {
         Some(v) => {
             if grid.grid[v.0 as usize][v.1 as usize].class == CellClass::Food {
                 clear_tail = false;
+                grid.num_food -= 1;
             }
 
             grid.grid[v.0 as usize][v.1 as usize] = Cell {
@@ -53,8 +54,18 @@ pub fn update_snakehead_in_grid(grid: &mut Grid, head: &SnakeHead) {
         }
     }
 
+    if head.body_positions.len() <= 1 {
+        clear_tail = false;
+    }
+
     if clear_tail {
-        grid.grid[head.last_tail_position.0 as usize][head.last_tail_position.1 as usize] =
-            GRID_CELL_COLOR;
+        let tail_pos = head.body_positions.get(0);
+        match tail_pos {
+            None => panic!("snake is empty!"),
+            Some(v) => {
+                grid.grid[v.0 as usize][v.1 as usize] = GRID_CELL_COLOR;
+                head.body_positions.remove(0);
+            }
+        }
     }
 }

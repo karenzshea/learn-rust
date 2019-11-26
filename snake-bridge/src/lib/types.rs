@@ -46,6 +46,5 @@ impl Grid {
 pub struct SnakeHead {
     pub color: Cell,
     pub body_positions: Vec<(i32, i32)>,
-    pub last_tail_position: (i32, i32),
 }
 // TODO make location update a SnakeHead implementation
