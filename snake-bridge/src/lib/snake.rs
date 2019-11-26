@@ -1,5 +1,6 @@
 use crate::lib::constants::{GRID_CELL_COLOR, GRID_COLUMNS, GRID_ROWS};
-use crate::lib::types::{Cell, Grid, SnakeHead, CellClass};
+use crate::lib::types::{Cell, CellClass, GameOverErr, Grid, SnakeHead};
+use std::option::Option;
 
 pub fn update_snakehead_location(head: &mut SnakeHead, direction: (i32, i32)) {
     // body_positions vector looks like
@@ -29,22 +30,26 @@ pub fn update_snakehead_location(head: &mut SnakeHead, direction: (i32, i32)) {
         new_column = 0;
     }
 
-
     head.body_positions.push((new_row, new_column));
 }
 
-pub fn update_snakehead_in_grid(grid: &mut Grid, head: &mut SnakeHead) {
+pub fn update_snakehead_in_grid(grid: &mut Grid, head: &mut SnakeHead) -> Option<GameOverErr> {
     let mut clear_tail = true;
 
     let head_pos = head.body_positions.last();
     match head_pos {
         None => panic!("snake is empty!"),
         Some(v) => {
-            if grid.grid[v.0 as usize][v.1 as usize].class == CellClass::Food {
-                clear_tail = false;
-                grid.num_food -= 1;
+            match grid.grid[v.0 as usize][v.1 as usize].class {
+                CellClass::Food => {
+                    clear_tail = false;
+                    grid.num_food -= 1;
+                }
+                CellClass::Snake => {
+                    return Some(GameOverErr);
+                }
+                _ => {}
             }
-
             grid.grid[v.0 as usize][v.1 as usize] = Cell {
                 red: head.color.red,
                 green: head.color.green,
@@ -68,4 +73,6 @@ pub fn update_snakehead_in_grid(grid: &mut Grid, head: &mut SnakeHead) {
             }
         }
     }
+
+    None
 }

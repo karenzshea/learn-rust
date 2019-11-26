@@ -1,6 +1,8 @@
 use rand;
+use std::error;
+use std::fmt;
 
-use crate::lib::constants::{ GRID_ROWS, GRID_COLUMNS, FOOD_CELL_COLOR };
+use crate::lib::constants::{FOOD_CELL_COLOR, GRID_COLUMNS, GRID_ROWS};
 
 #[derive(Debug, PartialEq)]
 pub enum CellClass {
@@ -28,16 +30,23 @@ impl Grid {
         let missing = self.max_food - self.num_food;
 
         if missing <= 0 {
-            return
+            return;
         }
 
         let mut rng = rand::thread_rng();
-        let xs: rand::seq::index::IndexVec = rand::seq::index::sample(&mut rng, GRID_ROWS as usize, missing as usize);
-        let ys: rand::seq::index::IndexVec = rand::seq::index::sample(&mut rng, GRID_COLUMNS as usize, missing as usize);
+        let xs: rand::seq::index::IndexVec =
+            rand::seq::index::sample(&mut rng, GRID_ROWS as usize, missing as usize);
+        let ys: rand::seq::index::IndexVec =
+            rand::seq::index::sample(&mut rng, GRID_COLUMNS as usize, missing as usize);
 
         for food_iter in xs.iter().zip(ys.iter()) {
             // Q: can Cell{} be default constructed/copy constructed from FOOD_CELL_COLOR constant
-            self.grid[food_iter.0][food_iter.1] = Cell { red: FOOD_CELL_COLOR.red, green: FOOD_CELL_COLOR.green, blue: FOOD_CELL_COLOR.blue, class: CellClass::Food };
+            self.grid[food_iter.0][food_iter.1] = Cell {
+                red: FOOD_CELL_COLOR.red,
+                green: FOOD_CELL_COLOR.green,
+                blue: FOOD_CELL_COLOR.blue,
+                class: CellClass::Food,
+            };
             self.num_food += 1;
         }
     }
@@ -48,3 +57,18 @@ pub struct SnakeHead {
     pub body_positions: Vec<(i32, i32)>,
 }
 // TODO make location update a SnakeHead implementation
+
+#[derive(Debug, Clone)]
+pub struct GameOverErr;
+
+impl error::Error for GameOverErr {
+    fn description(&self) -> &str {
+        "SNAKE ATE ITSELF \nGAME OVER"
+    }
+}
+
+impl fmt::Display for GameOverErr {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "GameOverErr")
+    }
+}

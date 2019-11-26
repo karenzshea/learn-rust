@@ -8,7 +8,7 @@ use sdl2::EventPump;
 pub mod constants;
 pub mod snake;
 pub mod types;
-use types::{Cell, Grid, CellClass};
+use types::{Cell, CellClass, Grid};
 
 // this function initializes the canvas
 pub fn init(x: u32, y: u32) -> (Canvas<Window>, EventPump) {
@@ -46,8 +46,13 @@ pub fn grid_init(nx_cells: u32, ny_cells: u32) -> Grid {
             });
         }
     }
-    let max_food: u32 = ((constants::GRID_ROWS * constants::GRID_COLUMNS) as f32 * 0.005).floor() as u32;
-    let grid = Grid { grid: grid_vector, max_food: max_food, num_food: 0 };
+    let max_food: u32 =
+        ((constants::GRID_ROWS * constants::GRID_COLUMNS) as f32 * 0.005).floor() as u32;
+    let grid = Grid {
+        grid: grid_vector,
+        max_food: max_food,
+        num_food: 0,
+    };
 
     grid
 }

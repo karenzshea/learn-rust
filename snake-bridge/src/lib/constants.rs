@@ -1,4 +1,4 @@
-use super::types::{ Cell, CellClass };
+use super::types::{Cell, CellClass};
 
 pub const CANVAS_WIDTH: u32 = 720;
 pub const CANVAS_HEIGHT: u32 = 720;

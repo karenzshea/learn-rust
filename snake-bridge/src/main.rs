@@ -6,7 +6,7 @@ use sdl2::keyboard::Keycode;
 
 use crate::lib::constants;
 use crate::lib::snake;
-use crate::lib::types::{Cell, SnakeHead, CellClass};
+use crate::lib::types::{Cell, CellClass, GameOverErr, SnakeHead};
 
 pub mod lib;
 fn main() {
@@ -60,7 +60,10 @@ fn main() {
         grid.replenish_food();
 
         snake::update_snakehead_location(&mut snakehead, direction);
-        snake::update_snakehead_in_grid(&mut grid, &mut snakehead);
+        match snake::update_snakehead_in_grid(&mut grid, &mut snakehead) {
+            Some(GameOverErr) => panic!("{}", GameOverErr),
+            None => {}
+        }
         lib::display_frame(
             &mut canvas,
             &grid,
