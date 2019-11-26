@@ -59,7 +59,7 @@ fn main() {
         // randomly add food to grid
         grid.replenish_food();
 
-        snake::update_snakehead_location(&mut snakehead, direction);
+        snakehead.move_forward(&direction);
         match snake::update_snakehead_in_grid(&mut grid, &mut snakehead) {
             Some(GameOverErr) => panic!("{}", GameOverErr),
             None => {}

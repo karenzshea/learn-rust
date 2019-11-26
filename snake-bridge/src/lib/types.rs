@@ -41,6 +41,9 @@ impl Grid {
 
         for food_iter in xs.iter().zip(ys.iter()) {
             // Q: can Cell{} be default constructed/copy constructed from FOOD_CELL_COLOR constant
+            if self.grid[food_iter.0][food_iter.1].class == CellClass::Snake {
+                continue;
+            }
             self.grid[food_iter.0][food_iter.1] = Cell {
                 red: FOOD_CELL_COLOR.red,
                 green: FOOD_CELL_COLOR.green,
@@ -56,7 +59,39 @@ pub struct SnakeHead {
     pub color: Cell,
     pub body_positions: Vec<(i32, i32)>,
 }
-// TODO make location update a SnakeHead implementation
+
+impl SnakeHead {
+    pub fn move_forward(&mut self, direction: &(i32, i32)) {
+        // body_positions vector looks like
+        // tail      head
+        //  <---------:>
+        let mut new_row;
+        let mut new_column;
+        let head_pos = &self.body_positions.get(&self.body_positions.len() - 1);
+        match head_pos {
+            None => panic!("snake is empty!"),
+            Some(v) => {
+                new_row = v.0 + direction.0;
+                new_column = v.1 + direction.1;
+            }
+        }
+
+        // if snake hits wall, come out the other side
+        if new_row < 0 {
+            new_row = (GRID_ROWS - 1) as i32;
+        } else if new_row == GRID_ROWS as i32 {
+            new_row = 0;
+        }
+
+        if new_column < 0 {
+            new_column = (GRID_COLUMNS - 1) as i32;
+        } else if new_column == GRID_COLUMNS as i32 {
+            new_column = 0;
+        }
+
+        &self.body_positions.push((new_row, new_column));
+    }
+}
 
 #[derive(Debug, Clone)]
 pub struct GameOverErr;
