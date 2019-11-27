@@ -9,6 +9,7 @@ use crate::lib::snake;
 use crate::lib::types::{Cell, CellClass, GameOverErr, SnakeHead};
 
 pub mod lib;
+
 fn main() {
     let (mut canvas, mut events) = lib::init(constants::CANVAS_WIDTH, constants::CANVAS_HEIGHT);
 

@@ -12,6 +12,7 @@ pub enum CellClass {
     Empty,
 }
 
+#[derive(Clone, Copy)]
 pub struct Cell {
     pub red: u8,
     pub green: u8,
@@ -32,14 +33,7 @@ impl Grid {
             return Some(InvalidCellErr);
         }
 
-        // Q: is there a better way to copy construct this Cell
-        // TODO implement Copy trait for Cell type?
-        self.grid[coord.0 as usize][coord.1 as usize] = Cell {
-            red: cell.red,
-            green: cell.green,
-            blue: cell.blue,
-            class: cell.class,
-        };
+        self.grid[coord.0 as usize][coord.1 as usize] = *cell;
         None
     }
     pub fn update_cells(
@@ -69,7 +63,6 @@ impl Grid {
             rand::seq::index::sample(&mut rng, GRID_COLUMNS as usize, missing as usize);
 
         for food_iter in xs.iter().zip(ys.iter()) {
-            // Q: can Cell{} be default constructed/copy constructed from FOOD_CELL_COLOR constant
             if self.grid[food_iter.0][food_iter.1].class == CellClass::Snake {
                 continue;
             }
