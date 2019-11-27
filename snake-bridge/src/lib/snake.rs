@@ -1,5 +1,5 @@
-use crate::lib::constants::{GRID_CELL_COLOR};
-use crate::lib::types::{Cell, CellClass, GameOverErr, Grid, SnakeHead};
+use crate::lib::constants::GRID_CELL_COLOR;
+use crate::lib::types::{CellClass, GameOverErr, Grid, SnakeHead};
 use std::option::Option;
 
 pub fn update_snakehead_in_grid(grid: &mut Grid, head: &mut SnakeHead) -> Option<GameOverErr> {
@@ -19,13 +19,8 @@ pub fn update_snakehead_in_grid(grid: &mut Grid, head: &mut SnakeHead) -> Option
                 }
                 _ => {}
             }
-            // Q: is there a better way to copy construct this Cell
-            grid.grid[v.0 as usize][v.1 as usize] = Cell {
-                red: head.color.red,
-                green: head.color.green,
-                blue: head.color.blue,
-                class: CellClass::Snake,
-            };
+            let coords = (v.0 as usize, v.1 as usize);
+            grid.update_cell(&coords, &head.cell);
         }
     }
 

@@ -1,10 +1,11 @@
 use rand;
 use std::error;
 use std::fmt;
+use std::option::Option;
 
 use crate::lib::constants::{FOOD_CELL_COLOR, GRID_COLUMNS, GRID_ROWS};
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Clone, Copy)]
 pub enum CellClass {
     Snake,
     Food,
@@ -26,6 +27,34 @@ pub struct Grid {
 }
 
 impl Grid {
+    pub fn update_cell(&mut self, coord: &(usize, usize), cell: &Cell) -> Option<InvalidCellErr> {
+        if coord.0 >= GRID_ROWS as usize || coord.1 >= GRID_COLUMNS as usize {
+            return Some(InvalidCellErr);
+        }
+
+        // Q: is there a better way to copy construct this Cell
+        // TODO implement Copy trait for Cell type?
+        self.grid[coord.0 as usize][coord.1 as usize] = Cell {
+            red: cell.red,
+            green: cell.green,
+            blue: cell.blue,
+            class: cell.class,
+        };
+        None
+    }
+    pub fn update_cells(
+        &mut self,
+        coords: &Vec<(usize, usize)>,
+        cell: &Cell,
+    ) -> Option<InvalidCellErr> {
+        for coord in coords {
+            match self.update_cell(coord, cell) {
+                Some(InvalidCellErr) => return Some(InvalidCellErr),
+                _ => {}
+            }
+        }
+        None
+    }
     pub fn replenish_food(&mut self) {
         let missing = self.max_food - self.num_food;
 
@@ -44,19 +73,17 @@ impl Grid {
             if self.grid[food_iter.0][food_iter.1].class == CellClass::Snake {
                 continue;
             }
-            self.grid[food_iter.0][food_iter.1] = Cell {
-                red: FOOD_CELL_COLOR.red,
-                green: FOOD_CELL_COLOR.green,
-                blue: FOOD_CELL_COLOR.blue,
-                class: CellClass::Food,
-            };
+            self.update_cell(
+                &(food_iter.0 as usize, food_iter.1 as usize),
+                &FOOD_CELL_COLOR,
+            );
             self.num_food += 1;
         }
     }
 }
 
 pub struct SnakeHead {
-    pub color: Cell,
+    pub cell: Cell,
     pub body_positions: Vec<(i32, i32)>,
 }
 
@@ -105,5 +132,20 @@ impl error::Error for GameOverErr {
 impl fmt::Display for GameOverErr {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "GameOverErr")
+    }
+}
+
+#[derive(Debug, Clone)]
+pub struct InvalidCellErr;
+
+impl error::Error for InvalidCellErr {
+    fn description(&self) -> &str {
+        "Provided cell is invalid on this grid"
+    }
+}
+
+impl fmt::Display for InvalidCellErr {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "InvalidCellErr")
     }
 }

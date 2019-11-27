@@ -19,7 +19,7 @@ fn main() {
             (constants::GRID_ROWS / 2) as i32,
             (constants::GRID_COLUMNS / 2) as i32,
         )],
-        color: Cell {
+        cell: Cell {
             red: 0,
             green: 0,
             blue: 255,
@@ -60,6 +60,7 @@ fn main() {
         grid.replenish_food();
 
         snakehead.move_forward(&direction);
+
         match snake::update_snakehead_in_grid(&mut grid, &mut snakehead) {
             Some(GameOverErr) => panic!("{}", GameOverErr),
             None => {}
