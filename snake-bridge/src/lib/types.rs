@@ -21,13 +21,42 @@ pub struct Cell {
 }
 
 pub struct Grid {
+    // TODO: expose method for getting cell value within grid
     pub grid: Vec<Vec<Cell>>,
-    // Q: how to make this non-public but still accessible during construction?
-    pub max_food: u32,
-    pub num_food: u32,
+    max_food: u32,
+    num_food: u32,
 }
 
 impl Grid {
+    pub fn new(nx_cells: u32, ny_cells: u32) -> Self {
+        let mut grid_vector = Vec::new();
+
+        for row in 0..ny_cells {
+            grid_vector.push(Vec::new());
+            for _column in 0..nx_cells {
+                grid_vector[row as usize].push(Cell {
+                    red: 35_u8,
+                    green: 15_u8,
+                    blue: 13_u8,
+                    class: CellClass::Empty,
+                });
+            }
+        }
+        let max_food: u32 =
+            ((GRID_ROWS * GRID_COLUMNS) as f32 * 0.005).floor() as u32;
+        let grid = Grid {
+            grid: grid_vector,
+            max_food: max_food,
+            num_food: 0,
+        };
+
+        grid
+    }
+
+    pub fn decrease_food(&mut self, by: u32) {
+        self.num_food -= by
+    }
+
     pub fn update_cell(&mut self, coord: &(usize, usize), cell: &Cell) -> Option<InvalidCellErr> {
         if coord.0 >= GRID_ROWS as usize || coord.1 >= GRID_COLUMNS as usize {
             return Some(InvalidCellErr);

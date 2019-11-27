@@ -12,7 +12,7 @@ pub fn update_snakehead_in_grid(grid: &mut Grid, head: &mut SnakeHead) -> Option
             match grid.grid[v.0 as usize][v.1 as usize].class {
                 CellClass::Food => {
                     clear_tail = false;
-                    grid.num_food -= 1;
+                    grid.decrease_food(1);
                 }
                 CellClass::Snake => {
                     return Some(GameOverErr);

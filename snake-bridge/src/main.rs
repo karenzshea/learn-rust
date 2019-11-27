@@ -6,19 +6,19 @@ use sdl2::keyboard::Keycode;
 
 use crate::lib::constants;
 use crate::lib::snake;
-use crate::lib::types::{Cell, CellClass, GameOverErr, SnakeHead};
+use crate::lib::types::{Cell, CellClass, GameOverErr, SnakeHead, Grid};
 
 pub mod lib;
 
 fn main() {
     let (mut canvas, mut events) = lib::init(constants::CANVAS_WIDTH, constants::CANVAS_HEIGHT);
 
-    let mut grid = lib::grid_init(constants::GRID_COLUMNS, constants::GRID_ROWS);
+    let mut grid = Grid::new(constants::GRID_COLUMNS, constants::GRID_ROWS);
     let mut direction = (1i32, 0i32);
     let mut snakehead = SnakeHead {
         body_positions: vec![(
-            (constants::GRID_ROWS / 2) as i32,
-            (constants::GRID_COLUMNS / 2) as i32,
+            constants::GRID_ROWS / 2,
+            constants::GRID_COLUMNS / 2,
         )],
         cell: Cell {
             red: 0,
