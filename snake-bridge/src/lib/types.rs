@@ -1,7 +1,6 @@
 use rand;
 use std::error;
 use std::fmt;
-use std::option::Option;
 
 use crate::lib::constants::{FOOD_CELL_COLOR, GRID_COLUMNS, GRID_ROWS};
 
@@ -10,6 +9,13 @@ pub enum CellClass {
     Snake,
     Food,
     Empty,
+}
+
+pub enum Direction {
+    Up,
+    Down,
+    Left,
+    Right,
 }
 
 #[derive(Clone, Copy)]
@@ -57,26 +63,24 @@ impl Grid {
         self.num_food -= by
     }
 
-    pub fn update_cell(&mut self, coord: &(usize, usize), cell: &Cell) -> Option<InvalidCellErr> {
+    pub fn update_cell(&mut self, coord: &(usize, usize), cell: &Cell) -> Result<(), InvalidCellErr> {
         if coord.0 >= GRID_ROWS as usize || coord.1 >= GRID_COLUMNS as usize {
-            return Some(InvalidCellErr);
+            return Err(InvalidCellErr);
         }
 
         self.grid[coord.0 as usize][coord.1 as usize] = *cell;
-        None
+        Ok(())
     }
     pub fn update_cells(
         &mut self,
         coords: &Vec<(usize, usize)>,
         cell: &Cell,
-    ) -> Option<InvalidCellErr> {
+    ) -> Result<(), InvalidCellErr> {
         for coord in coords {
-            match self.update_cell(coord, cell) {
-                Some(InvalidCellErr) => return Some(InvalidCellErr),
-                _ => {}
-            }
+            // ? operator, try's function call, returns err if err, unwraps result on success;
+            self.update_cell(coord, cell)?;
         }
-        None
+        Ok(())
     }
     pub fn replenish_food(&mut self) {
         let missing = self.max_food - self.num_food;
@@ -95,10 +99,16 @@ impl Grid {
             if self.grid[food_iter.0][food_iter.1].class == CellClass::Snake {
                 continue;
             }
-            self.update_cell(
+            let update_result = self.update_cell(
                 &(food_iter.0 as usize, food_iter.1 as usize),
                 &FOOD_CELL_COLOR,
             );
+            match update_result {
+                Err(err) => {
+                    panic!("Could not update cell {}", err)
+                }
+                _ => {}
+            };
             self.num_food += 1;
         }
     }
@@ -106,11 +116,11 @@ impl Grid {
 
 pub struct SnakeHead {
     pub cell: Cell,
-    pub body_positions: Vec<(i32, i32)>,
+    pub body_positions: Vec<(u32, u32)>,
 }
 
 impl SnakeHead {
-    pub fn move_forward(&mut self, direction: &(i32, i32)) {
+    pub fn move_forward(&mut self, direction: &Direction) {
         // body_positions vector looks like
         // tail      head
         //  <---------:>
@@ -120,22 +130,23 @@ impl SnakeHead {
         match head_pos {
             None => panic!("snake is empty!"),
             Some(v) => {
-                new_row = v.0 + direction.0;
-                new_column = v.1 + direction.1;
+                new_row = v.0;
+                new_column = v.1;
+                match direction {
+                    Direction::Up => {
+                        new_row = (v.0 + GRID_ROWS - 1) % GRID_ROWS;
+                    },
+                    Direction::Down => {
+                        new_row = (v.0 + GRID_ROWS + 1) % GRID_ROWS;
+                    },
+                    Direction::Left => {
+                        new_column = (v.1 + GRID_COLUMNS - 1) % GRID_COLUMNS;
+                    },
+                    Direction::Right => {
+                        new_column = (v.1 + GRID_COLUMNS + 1) % GRID_COLUMNS;
+                    },
+                }
             }
-        }
-
-        // if snake hits wall, come out the other side
-        if new_row < 0 {
-            new_row = (GRID_ROWS - 1) as i32;
-        } else if new_row == GRID_ROWS as i32 {
-            new_row = 0;
-        }
-
-        if new_column < 0 {
-            new_column = (GRID_COLUMNS - 1) as i32;
-        } else if new_column == GRID_COLUMNS as i32 {
-            new_column = 0;
         }
 
         &self.body_positions.push((new_row, new_column));

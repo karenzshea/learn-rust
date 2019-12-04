@@ -20,7 +20,13 @@ pub fn update_snakehead_in_grid(grid: &mut Grid, head: &mut SnakeHead) -> Option
                 _ => {}
             }
             let coords = (v.0 as usize, v.1 as usize);
-            grid.update_cell(&coords, &head.cell);
+            let update_result = grid.update_cell(&coords, &head.cell);
+            match update_result {
+                Err(err) => {
+                    panic!("Could not update cell {}", err)
+                }
+                _ => {}
+            };
         }
     }
 
